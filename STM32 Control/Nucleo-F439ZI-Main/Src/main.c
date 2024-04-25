@@ -24,6 +24,11 @@
 #include "app.h"
 #include "uart_serial.h"
 
+#include <math.h>
+
+#define min(a,b) ((a) < (b) ? (a) : (b))
+#define max(a,b) ((a) > (b) ? (a) : (b))
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -35,6 +40,7 @@
 /* USER CODE BEGIN PD */
 
 void compute_auto_brake();
+void autonomous_speed_throttle_pid();
 
 /* USER CODE END PD */
 
@@ -89,6 +95,15 @@ uint32_t TxMailbox;
 
 uint8_t CAN_TxData[6];
 uint8_t CAN_RxData[6];
+
+//Throttle PID
+float pid_speed_error = 0.0;
+float pid_speed_error_pre = 0.0;
+float pid_integral = 0.0;
+float pid_derivative = 0.0;
+float p_term = 0.0;
+float i_term = 0.0;
+float d_term = 0.0;
 
 //char UART_TxData[6];
 
@@ -195,12 +210,57 @@ void handle_remote_command(){
 void handle_autonomous_command(){
 	uint8_t place_holder[10];
 	sscanf(drive_msg, "%s %f %s %f", place_holder, &steer_desired, place_holder, &speed_desired);
-
-	compute_auto_brake();
+	autonomous_speed_throttle_pid();
+//	compute_auto_brake();
 }
 
 void handle_manual_command(){
 	steer_desired = steering_wheel;
+}
+
+#define MAX_THROTTLE 40  // replace with your maximum throttle value
+#define MIN_THROTTLE 15     // replace with your minimum throttle value
+#define WAVE_FREQ 1         // frequency of the cosine wave in Hz
+int loop_count = 0.0;
+// Assuming you call this function every 25ms (40Hz)
+float calculateThrottle(int loopCount) {
+    float amplitude = (MAX_THROTTLE - MIN_THROTTLE) / 2.0;
+    float offset = (MAX_THROTTLE + MIN_THROTTLE) / 2.0;
+    float phase = (float)loopCount / 40 * WAVE_FREQ * 2.0 * M_PI; // 40Hz control loop
+    return amplitude * cos(phase) + offset;
+}
+
+
+
+void autonomous_speed_throttle_pid() {
+	float Kp = 2.0; //Best Kp = 2.0
+	float Ki = 0.2;
+	float Kd = 2.0;
+	float min_throttle = 0.0;
+	float pid_cycle_time = 0.200;
+
+	pid_speed_error = speed_desired - speed_measured;
+	p_term = Kp * pid_speed_error;
+
+	pid_integral += pid_speed_error * pid_cycle_time;
+	i_term = Ki * pid_integral;
+
+	pid_derivative = (pid_speed_error - pid_speed_error_pre)/pid_cycle_time;
+	d_term = Kd * pid_derivative;
+	pid_speed_error_pre = pid_speed_error;
+
+	throttle_desired = min_throttle + p_term + d_term + i_term;
+
+
+    printf("p_term: %f \r\n", p_term);
+    printf("i_term: %f \r\n", i_term);
+    printf("d_term: %f \r\n", d_term);
+    printf("pid_speed_error: %f \r\n", pid_speed_error);
+    printf("pid_speed_error_pre: %f \r\n", pid_speed_error_pre);
+    printf("throttle_desired: %f \r\n", throttle_desired);
+    printf("speed_desired: %f \r\n", speed_desired);
+    printf("speed_measured: %f \r\n", speed_measured);
+	printf("\r\n");
 }
 
 void compute_auto_brake(){
@@ -303,14 +363,12 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 
 		if (gokart_mode == 0){
 			handle_remote_command();
-		} else if (gokart_mode == 1){
-			handle_autonomous_command();
 		} else if (gokart_mode == 2){
 			handle_manual_command();
 		}
-
 		cast_command();
 		send_command();
+
 	}
 
 	// 40Hz - 25ms send out gokart drive info to higher level device
@@ -326,7 +384,12 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 
 	// 5Hz - 200ms print gokart info
 	if (htim == &htim11){
-		 print_info();
+//		 print_info();
+		if (gokart_mode == 1){
+			handle_autonomous_command();
+			cast_command();
+			send_command();
+		}
 	}
 }
 
