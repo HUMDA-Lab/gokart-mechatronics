@@ -101,18 +101,16 @@ float look_ahead_time = 0.025;//0.3;
 float steer_error = 0.0;
 float steer_delta_update = 0.0;
 float kp_e = 6.0;//1.0;
-float ki_e = 2.0; // Integral gain, adjust as needed
+float ki_e = 0.5; // Integral gain, adjust as needed
 float steer_error_integral = 0.0;
 float kd_e = 60.0;//0.0;
 float steer_error_pre = 0.0;
 float vel = 0.0;
-float kp_v = 10.0;//10.0;
-float kd_v = 1000.0;//100.0;
+float kp_v = 20.0;//10.0;
+float kd_v = 200.0;//100.0;
 float vel_pre = 0.0;
 float cycle_time = 0.025;
 float max_integral_value = 18;
-float vel_error = 0.0;
-float vel_error_pre = 0.0;
 
 //float cycle_time = 0.025;
 //float steer_error = 0.0;
@@ -170,49 +168,92 @@ float clamp(float value, float min, float max) {
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 	// 40Hz = 25ms motor control loop
 	if (htim == &htim6) {
-		//Left = -ve steer_measured
-		//Right = +ve steer_measured
 		steer_measured = 360.0 / (32 * gear_ratio) * encoder_count;
-		// steer_measured = wrap_to_pi(steer_measured);
+//		printf("\n\rSteer Measured Before Wrapping: (USBW) %f\r\n", steer_measured);
+		steer_measured = wrap_to_pi(steer_measured);
+//		printf("\n\rSteer Measured After Wrapping: (USBW) %f\r\n", steer_measured);
+//		if (steer_measured > 55.0)
+//			steer_measured = 55.0;
+//		else if (steer_measured < -55.0)
+//			steer_measured = -55.0;
 
-    //2/12/2024 Edits
+//    steer_error = steer_desired - steer_measured;
+//
+//    P_out = Kp * steer_error;
+//
+//    integral += steer_error * cycle_time;
+//    I_out = Ki * integral;
+//
+//    derivative = (steer_error - steer_pre_error) / cycle_time;
+//    D_out = Kd * derivative;
+//
+//    PID_steer = P_out + I_out + D_out;
+//
+//    printf("\r\n ---------------------------- \n\r");
+////    printf("\n\r Steer Measured (USBW): %f \r\n", steer_measured);
+////    printf("\n\r Steer Desired (MCS): %f \r\n", steer_desired);
+//    printf("\n\r Steer Error: %f \r\n", steer_error);
+////    printf("\n\r P_out: %f \r\n", P_out);
+////    printf("\n\r I_out: %f \r\n", I_out);
+////    printf("\n\r D_out: %f \r\n", D_out);
+//    printf("\n\r PID_steer: %f \r\n", PID_steer);
+//    printf("\r\n ---------------------------- \n\r");
+//
+//    steer_pre_error = steer_error;
+//    if (PID_steer > 0) {
+//    	printf("\r\n Steer Left \n\r");
+//    	TIM1->CCR1 = 50;
+//    	TIM1->CCR2 = 0;
+//    } else {
+//    	printf("\r\n Steer Right \n\r");
+//    	TIM1->CCR1 = 0;
+//    	TIM1->CCR2 = 50;
+//    }
 
-    steer_error = -1 * steer_desired - steer_measured -1 - 0.110294;
-    steer_delta_update = kp_e * steer_error / 360.0 + kd_e * (steer_error - steer_error_pre) / 360.0;
-    steer_error_pre = steer_error;
 
-    vel += steer_delta_update;
-    
-    if (vel > 5.0)
-    {
-      vel = 5.0;
-    } else if (vel < -5.0)
-    {
-      vel = -5.0;
-    }
 
-    vel_error = (vel - vel_pre);
-    duty_cycle = (int)(kp_v * vel_error) + (int)(kd_v * (vel_error - vel_error_pre));
-    vel_error_pre = vel_error;
+//		printf("Duty cycle set");
+		steer_desired_usbw = (steer_desired == -1.0) ? 0 : steer_desired;
 
-    // Apply corrected duty cycle for steering control
-    if(duty_cycle < 0){
-        printf("\n\rSteer Left!\r\n");
-        TIM1->CCR1 = 0;
-        TIM1->CCR2 = -duty_cycle;
-    }
-    else if(duty_cycle > 0){
-        printf("\n\rSteer Right!\r\n");
-        TIM1->CCR1 = duty_cycle;
-        TIM1->CCR2 = 0;
-    }
+		steer_angle_vel = (steer_measured - steer_pre) / cycle_time;
+		steer_pre = steer_measured;
 
-    printf("\r\nSteer Measured: %f", steer_measured);
-    printf("\r\nSteer Desired: %f", steer_desired);
-    printf("\r\nSteer Error: %f", steer_error);
-    printf("\r\nDuty Cycle: %d", duty_cycle);
+//		steer_pred = steer_measured + look_ahead_time * steer_angle_vel;
+		steer_error = steer_desired_usbw - steer_measured;
 
-  }
+		steer_delta_update = kp_e * steer_error / 360.0 + kd_e * (steer_error - steer_error_pre) / 360.0;
+		steer_error_pre = steer_error;
+		vel += steer_delta_update;
+
+		if (vel > 5.0) {
+			vel = 5.0;
+		} else if (vel < -5.0) {
+			vel = -5.0;
+		}
+		duty_cycle = (int)((kp_v * vel) + (kd_v * (vel - vel_pre)));
+		vel_pre = vel;
+//		printf("\n\rEncoder Count: (USBW) %f\r\n", encoder_count);
+//		printf("\n\rSteer Measured: (USBW) %f\r\n", steer_measured);
+//		printf("\n\rSteer Desired before Edit: (MCS) %f\r\n", steer_desired);
+//		printf("\n\rSteer Desired after Edit: (MCS) %f\r\n", steer_desired_usbw);
+		printf("\n\rSteer Delta Update: %f\r\n", steer_delta_update);
+		printf("\n\rVel: %f\r\n", vel);
+		printf("\n\rDuty Cycle: %d\r\n", duty_cycle);
+		if (duty_cycle < 0 && steer_measured <= -54 || duty_cycle > 0 && steer_measured >= 54) {
+			TIM1->CCR1 = 0;
+			TIM1->CCR2 = 0;
+		}
+		else if(duty_cycle < 0){
+			printf("\n\rSteer Right!\r\n");
+			TIM1->CCR1 = 0;
+			TIM1->CCR2 = -duty_cycle;
+		}
+		else{
+			printf("\n\rSteer Left!\r\n");
+			TIM1->CCR1 = duty_cycle;
+			TIM1->CCR2 = 0;
+		}
+	}
 
 	// 20000Hz = 0.05ms read angle measurement
 	if(htim == &htim7){

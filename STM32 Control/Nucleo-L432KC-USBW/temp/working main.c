@@ -100,14 +100,14 @@ float steer_pred = 0.0;
 float look_ahead_time = 0.025;//0.3;
 float steer_error = 0.0;
 float steer_delta_update = 0.0;
-float kp_e = 6.0;//1.0;
-float ki_e = 2.0; // Integral gain, adjust as needed
+float kp_e = 10.0;//1.0;
+float ki_e = 5; // Integral gain, adjust as needed
 float steer_error_integral = 0.0;
 float kd_e = 60.0;//0.0;
 float steer_error_pre = 0.0;
 float vel = 0.0;
-float kp_v = 10.0;//10.0;
-float kd_v = 1000.0;//100.0;
+float kp_v = 20.0;//10.0;
+float kd_v = 200.0;//100.0;
 float vel_pre = 0.0;
 float cycle_time = 0.025;
 float max_integral_value = 18;
@@ -177,23 +177,13 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 
     //2/12/2024 Edits
 
-    steer_error = -1 * steer_desired - steer_measured -1 - 0.110294;
-    steer_delta_update = kp_e * steer_error / 360.0 + kd_e * (steer_error - steer_error_pre) / 360.0;
+    steer_error = -1 * steer_desired - steer_measured;
+    duty_cycle = (int) kp_e * steer_error + (int) kd_e * (steer_error - steer_error_pre);
+    if (duty_cycle > 100)
+    	duty_cycle = 100.0;
+    else if (duty_cycle < -100)
+    	duty_cycle = -100.0;
     steer_error_pre = steer_error;
-
-    vel += steer_delta_update;
-    
-    if (vel > 5.0)
-    {
-      vel = 5.0;
-    } else if (vel < -5.0)
-    {
-      vel = -5.0;
-    }
-
-    vel_error = (vel - vel_pre);
-    duty_cycle = (int)(kp_v * vel_error) + (int)(kd_v * (vel_error - vel_error_pre));
-    vel_error_pre = vel_error;
 
     // Apply corrected duty cycle for steering control
     if(duty_cycle < 0){

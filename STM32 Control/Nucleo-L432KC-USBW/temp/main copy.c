@@ -101,13 +101,13 @@ float look_ahead_time = 0.025;//0.3;
 float steer_error = 0.0;
 float steer_delta_update = 0.0;
 float kp_e = 6.0;//1.0;
-float ki_e = 2.0; // Integral gain, adjust as needed
+float ki_e = 0.5; // Integral gain, adjust as needed
 float steer_error_integral = 0.0;
 float kd_e = 60.0;//0.0;
 float steer_error_pre = 0.0;
 float vel = 0.0;
-float kp_v = 10.0;//10.0;
-float kd_v = 1000.0;//100.0;
+float kp_v = 20.0;//10.0;
+float kd_v = 200.0;//100.0;
 float vel_pre = 0.0;
 float cycle_time = 0.025;
 float max_integral_value = 18;
@@ -170,14 +170,14 @@ float clamp(float value, float min, float max) {
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 	// 40Hz = 25ms motor control loop
 	if (htim == &htim6) {
-		//Left = -ve steer_measured
-		//Right = +ve steer_measured
 		steer_measured = 360.0 / (32 * gear_ratio) * encoder_count;
-		// steer_measured = wrap_to_pi(steer_measured);
+		steer_measured = wrap_to_pi(steer_measured);
 
-    //2/12/2024 Edits
+    steer_angle_vel = (steer_measured - steer_pre) / cycle_time;
+    steer_pre = steer_measured;
 
-    steer_error = -1 * steer_desired - steer_measured -1 - 0.110294;
+    steer_pred = steer_measured + cycle_time * steer_angle_vel;
+    steer_error = steer_pred - steer_desired;
     steer_delta_update = kp_e * steer_error / 360.0 + kd_e * (steer_error - steer_error_pre) / 360.0;
     steer_error_pre = steer_error;
 
@@ -195,22 +195,20 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
     duty_cycle = (int)(kp_v * vel_error) + (int)(kd_v * (vel_error - vel_error_pre));
     vel_error_pre = vel_error;
 
-    // Apply corrected duty cycle for steering control
-    if(duty_cycle < 0){
-        printf("\n\rSteer Left!\r\n");
-        TIM1->CCR1 = 0;
-        TIM1->CCR2 = -duty_cycle;
-    }
-    else if(duty_cycle > 0){
-        printf("\n\rSteer Right!\r\n");
-        TIM1->CCR1 = duty_cycle;
-        TIM1->CCR2 = 0;
-    }
-
-    printf("\r\nSteer Measured: %f", steer_measured);
-    printf("\r\nSteer Desired: %f", steer_desired);
-    printf("\r\nSteer Error: %f", steer_error);
-    printf("\r\nDuty Cycle: %d", duty_cycle);
+    if (duty_cycle < 0 && steer_measured <= -54 || duty_cycle > 0 && steer_measured >= 54) {
+			TIM1->CCR1 = 0;
+			TIM1->CCR2 = 0;
+		}
+		else if(duty_cycle < 0){
+			printf("\n\rSteer Right!\r\n");
+			TIM1->CCR1 = 0;
+			TIM1->CCR2 = -duty_cycle;
+		}
+		else{
+			printf("\n\rSteer Left!\r\n");
+			TIM1->CCR1 = duty_cycle;
+			TIM1->CCR2 = 0;
+		}
 
   }
 
