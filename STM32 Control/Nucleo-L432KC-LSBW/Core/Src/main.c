@@ -96,7 +96,7 @@ double kd_e = 1.00;
 
 double steer_measured = 0.0;
 double steer_desired = 0.0;
-double steer_offset = -106.0-22.77;
+double steer_offset = -106.0-21.77;
 double steer_max = 55.0;
 
 double current = 0.0;

@@ -1,20 +1,20 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2022 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file           : main.c
+ * @brief          : Main program body
+ ******************************************************************************
+ * @attention
+ *
+ * Copyright (c) 2022 STMicroelectronics.
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
@@ -26,8 +26,8 @@
 
 #include <math.h>
 
-#define min(a,b) ((a) < (b) ? (a) : (b))
-#define max(a,b) ((a) > (b) ? (a) : (b))
+#define min(a, b) ((a) < (b) ? (a) : (b))
+#define max(a, b) ((a) > (b) ? (a) : (b))
 
 /* USER CODE END Includes */
 
@@ -61,6 +61,7 @@ TIM_HandleTypeDef htim6;
 TIM_HandleTypeDef htim7;
 TIM_HandleTypeDef htim10;
 TIM_HandleTypeDef htim11;
+TIM_HandleTypeDef htim13;
 
 UART_HandleTypeDef huart2;
 UART_HandleTypeDef huart3;
@@ -96,7 +97,7 @@ uint32_t TxMailbox;
 uint8_t CAN_TxData[6];
 uint8_t CAN_RxData[6];
 
-//Throttle PID
+// Throttle PID
 float pid_speed_error = 0.0;
 float pid_speed_error_pre = 0.0;
 float pid_integral = 0.0;
@@ -105,7 +106,10 @@ float p_term = 0.0;
 float i_term = 0.0;
 float d_term = 0.0;
 
-//char UART_TxData[6];
+//Control Disconnect variable
+volatile bool ctrl_connected = false;
+
+// char UART_TxData[6];
 
 /* USER CODE END PV */
 
@@ -123,6 +127,7 @@ static void MX_I2C1_Init(void);
 static void MX_TIM7_Init(void);
 static void MX_TIM10_Init(void);
 static void MX_TIM11_Init(void);
+static void MX_TIM13_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -130,267 +135,324 @@ static void MX_TIM11_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-int Debug_UART_Get_Byte() {
-	if (__HAL_UART_GET_FLAG(&huart3, UART_FLAG_RXNE) == SET) {
-		return (uint8_t) (huart3.Instance->DR & (uint8_t) 0x00FF);
-	}
-	return -1;
+int Debug_UART_Get_Byte()
+{
+  if (__HAL_UART_GET_FLAG(&huart3, UART_FLAG_RXNE) == SET)
+  {
+    return (uint8_t)(huart3.Instance->DR & (uint8_t)0x00FF);
+  }
+  return -1;
 }
 
 // This function merges array a, b, c into array d in sequence (no sort)
 void mergearray(char a[], char b[], char c[], char d[], int arr1size, int arr2size, int arr3size)
 {
-    // resultant Array Size Declaration
-    int i, j;
+  // resultant Array Size Declaration
+  int i, j;
 
-    // copying array 1 elements in to c array
-    for (i = 0; i < arr1size; i++) {
-    	d[i] = a[i];
-    }
+  // copying array 1 elements in to c array
+  for (i = 0; i < arr1size; i++)
+  {
+    d[i] = a[i];
+  }
 
-    // copying array 2 elements in to c array
-    for (i = 0, j = arr1size;
-         j < arr1size + arr2size && i < arr2size; i++, j++) {
-        d[j] = b[i];
-    }
+  // copying array 2 elements in to c array
+  for (i = 0, j = arr1size;
+       j < arr1size + arr2size && i < arr2size; i++, j++)
+  {
+    d[j] = b[i];
+  }
 
-    // copying array 3 elements in to c array
-    for (i = 0, j = arr1size + arr2size;
-         j < arr1size + arr2size + arr3size && i < arr3size; i++, j++) {
-        d[j] = c[i];
-    }
+  // copying array 3 elements in to c array
+  for (i = 0, j = arr1size + arr2size;
+       j < arr1size + arr2size + arr3size && i < arr3size; i++, j++)
+  {
+    d[j] = c[i];
+  }
 }
 
-void send_gokart_info(float steer, float speed, int is_info){
-	char data[6];
-	char info_steer[13];
-	char info_speed[13];
-	char info_type[9];
-	char info_out[35];
+void send_gokart_info(float steer, float speed, int is_info)
+{
+  char data[6];
+  char info_steer[13];
+  char info_speed[13];
+  char info_type[9];
+  char info_out[35];
 
-	sprintf(data, "%.2f", steer / 180.0 * 3.14);
-	mergearray("steer ", data, " ", info_steer, 6, 6, 1);
+  sprintf(data, "%.2f", steer / 180.0 * 3.14);
+  mergearray("steer ", data, " ", info_steer, 6, 6, 1);
 
-	sprintf(data, "%.2f", speed);
-	mergearray("speed ", data, " ", info_speed, 6, 6, 1);
+  sprintf(data, "%.2f", speed);
+  mergearray("speed ", data, " ", info_speed, 6, 6, 1);
 
-	if (is_info == 0){
-		mergearray("type ", "cmmd", "", info_type, 5, 4, 0);
-	} else{
-		mergearray("type ", "info", "", info_type, 5, 4, 0);
-	}
+  if (is_info == 0)
+  {
+    mergearray("type ", "cmmd", "", info_type, 5, 4, 0);
+  }
+  else
+  {
+    mergearray("type ", "info", "", info_type, 5, 4, 0);
+  }
 
-	mergearray(info_steer, info_speed, info_type, info_out, 13, 13, 9);
+  mergearray(info_steer, info_speed, info_type, info_out, 13, 13, 9);
 
-	HAL_UART_Transmit(&huart6, info_out, sizeof(info_out), 10); // Sending in normal mode
+  HAL_UART_Transmit(&huart6, info_out, sizeof(info_out), 10); // Sending in normal mode
 }
 
-void handle_remote_command(){
-	float acc_percent = app.acc_percent;
-	float gear_shift = app.gokart_status;
-	float steer_percent = app.steer_percent;
+void handle_remote_command()
+{
+  float acc_percent = app.acc_percent;
+  float gear_shift = app.gokart_status;
+  float steer_percent = app.steer_percent;
 
-	if(acc_percent > 0.00){
-		throttle_desired = acc_percent * 100.0;
-		brake_desired = 0.0;
-	} else{
-		throttle_desired = 0.0;
-		brake_desired = -acc_percent * brake_max;
-	}
+  if (acc_percent > 0.00)
+  {
+    throttle_desired = acc_percent * 100.0;
+    brake_desired = 0.0;
+  }
+  else
+  {
+    throttle_desired = 0.0;
+    brake_desired = -acc_percent * brake_max;
+  }
 
-	if (gear_shift == 0){
-		motor_direction = 0;
-	} else{
-		motor_direction = 1;
-	}
+  if (gear_shift == 0)
+  {
+    motor_direction = 0;
+  }
+  else
+  {
+    motor_direction = 1;
+  }
 
-	steer_desired = steer_percent * steer_max;
+  steer_desired = steer_percent * steer_max;
 }
 
-void handle_autonomous_command(){
-	uint8_t place_holder[10];
-	sscanf(drive_msg, "%s %f %s %f", place_holder, &steer_desired, place_holder, &speed_desired);
-	autonomous_speed_throttle_pid();
-//	compute_auto_brake();
+void handle_autonomous_command()
+{
+  uint8_t place_holder[10];
+  sscanf(drive_msg, "%s %f %s %f", place_holder, &steer_desired, place_holder, &speed_desired);
+  autonomous_speed_throttle_pid();
+  //	compute_auto_brake();
 }
 
-void handle_manual_command(){
-	steer_desired = steering_wheel;
+void handle_manual_command()
+{
+  steer_desired = steering_wheel;
 }
 
-#define MAX_THROTTLE 40  // replace with your maximum throttle value
-#define MIN_THROTTLE 15     // replace with your minimum throttle value
-#define WAVE_FREQ 1         // frequency of the cosine wave in Hz
+#define MAX_THROTTLE 40 // replace with your maximum throttle value
+#define MIN_THROTTLE 15 // replace with your minimum throttle value
+#define WAVE_FREQ 1     // frequency of the cosine wave in Hz
 int loop_count = 0.0;
 // Assuming you call this function every 25ms (40Hz)
-float calculateThrottle(int loopCount) {
-    float amplitude = (MAX_THROTTLE - MIN_THROTTLE) / 2.0;
-    float offset = (MAX_THROTTLE + MIN_THROTTLE) / 2.0;
-    float phase = (float)loopCount / 40 * WAVE_FREQ * 2.0 * M_PI; // 40Hz control loop
-    return amplitude * cos(phase) + offset;
+float calculateThrottle(int loopCount)
+{
+  float amplitude = (MAX_THROTTLE - MIN_THROTTLE) / 2.0;
+  float offset = (MAX_THROTTLE + MIN_THROTTLE) / 2.0;
+  float phase = (float)loopCount / 40 * WAVE_FREQ * 2.0 * M_PI; // 40Hz control loop
+  return amplitude * cos(phase) + offset;
 }
 
+void autonomous_speed_throttle_pid()
+{
+  float Kp = 2.0; // Best Kp = 2.0
+  float Ki = 0.2;
+  float Kd = 2.0;
+  float min_throttle = 0.0;
+  float pid_cycle_time = 0.200;
 
+  pid_speed_error = speed_desired - speed_measured;
+  p_term = Kp * pid_speed_error;
 
-void autonomous_speed_throttle_pid() {
-	float Kp = 2.0; //Best Kp = 2.0
-	float Ki = 0.2;
-	float Kd = 2.0;
-	float min_throttle = 0.0;
-	float pid_cycle_time = 0.200;
+  pid_integral += pid_speed_error * pid_cycle_time;
+  i_term = Ki * pid_integral;
 
-	pid_speed_error = speed_desired - speed_measured;
-	p_term = Kp * pid_speed_error;
+  pid_derivative = (pid_speed_error - pid_speed_error_pre) / pid_cycle_time;
+  d_term = Kd * pid_derivative;
+  pid_speed_error_pre = pid_speed_error;
 
-	pid_integral += pid_speed_error * pid_cycle_time;
-	i_term = Ki * pid_integral;
+  throttle_desired = min_throttle + p_term + d_term + i_term;
 
-	pid_derivative = (pid_speed_error - pid_speed_error_pre)/pid_cycle_time;
-	d_term = Kd * pid_derivative;
-	pid_speed_error_pre = pid_speed_error;
-
-	throttle_desired = min_throttle + p_term + d_term + i_term;
-
-
-    printf("p_term: %f \r\n", p_term);
-    printf("i_term: %f \r\n", i_term);
-    printf("d_term: %f \r\n", d_term);
-    printf("pid_speed_error: %f \r\n", pid_speed_error);
-    printf("pid_speed_error_pre: %f \r\n", pid_speed_error_pre);
-    printf("throttle_desired: %f \r\n", throttle_desired);
-    printf("speed_desired: %f \r\n", speed_desired);
-    printf("speed_measured: %f \r\n", speed_measured);
-	printf("\r\n");
+  printf("p_term: %f \r\n", p_term);
+  printf("i_term: %f \r\n", i_term);
+  printf("d_term: %f \r\n", d_term);
+  printf("pid_speed_error: %f \r\n", pid_speed_error);
+  printf("pid_speed_error_pre: %f \r\n", pid_speed_error_pre);
+  printf("throttle_desired: %f \r\n", throttle_desired);
+  printf("speed_desired: %f \r\n", speed_desired);
+  printf("speed_measured: %f \r\n", speed_measured);
+  printf("\r\n");
 }
 
-void compute_auto_brake(){
-	float speed_error = speed_desired - speed_measured;
+void compute_auto_brake()
+{
+  float speed_error = speed_desired - speed_measured;
 
-	if (speed_error < -1.5){
-		brake_desired = (-speed_error - 1.5) * brake_max / 2;
-	} else{
-		brake_desired = 0.0;
-	}
+  if (speed_error < -1.5)
+  {
+    brake_desired = (-speed_error - 1.5) * brake_max / 2;
+  }
+  else
+  {
+    brake_desired = 0.0;
+  }
 }
 
-void cast_command(){
-	if(steer_desired > steer_max){
-		steer_desired = steer_max;
-	} else if (steer_desired < -steer_max){
-		steer_desired = -steer_max;
-	}
+void cast_command()
+{
+  if (steer_desired > steer_max)
+  {
+    steer_desired = steer_max;
+  }
+  else if (steer_desired < -steer_max)
+  {
+    steer_desired = -steer_max;
+  }
 
-	if (brake_desired > brake_max){
-		brake_desired = brake_max;
-	} else if (brake_desired < 0.0){
-		brake_desired = 0.0;
-	}
+  if (brake_desired > brake_max)
+  {
+    brake_desired = brake_max;
+  }
+  else if (brake_desired < 0.0)
+  {
+    brake_desired = 0.0;
+  }
 
-	if (throttle_desired > 100.0){
-		throttle_desired = 100.0;
-	} else if (throttle_desired < 0.0){
-		throttle_desired = 0.0;
-	}
+  if (throttle_desired > 100.0)
+  {
+    throttle_desired = 100.0;
+  }
+  else if (throttle_desired < 0.0)
+  {
+    throttle_desired = 0.0;
+  }
 }
 
-void send_command(){
-	// Send CANBus command
-	CAN_TxData[0] = (int)(steer_desired + steer_max);
-	CAN_TxData[1] = (int)(brake_desired);
-	CAN_TxData[2] = (int)(throttle_desired);
-	CAN_TxData[3] = (int)(motor_direction);
+void send_command()
+{
+  // Send CANBus command
+  CAN_TxData[0] = (int)(steer_desired + steer_max);
+  CAN_TxData[1] = (int)(brake_desired);
+  CAN_TxData[2] = (int)(throttle_desired);
+  CAN_TxData[3] = (int)(motor_direction);
 
-    HAL_CAN_AddTxMessage(&hcan1, &TxHeader, CAN_TxData, &TxMailbox);
+  HAL_CAN_AddTxMessage(&hcan1, &TxHeader, CAN_TxData, &TxMailbox);
 }
 
-void print_info(){
-	if (gokart_mode == 0){
-		printf("mode: remote \r\n");
-	} else if (gokart_mode == 1){
-		printf("mode: autonomous \r\n");
-	} else if (gokart_mode == 2){
-		printf("mode: manual \r\n");
-	}
+void print_info()
+{
+  if (gokart_mode == 0)
+  {
+    printf("mode: remote \r\n");
+  }
+  else if (gokart_mode == 1)
+  {
+    printf("mode: autonomous \r\n");
+  }
+  else if (gokart_mode == 2)
+  {
+    printf("mode: manual \r\n");
+  }
 
-	if (motor_direction == 0){
-		printf("motor_direction: reverse \r\n\n");
-	} else{
-		printf("motor_direction: forward \r\n");
-	}
+  if (motor_direction == 0)
+  {
+    printf("motor_direction: reverse \r\n\n");
+  }
+  else
+  {
+    printf("motor_direction: forward \r\n");
+  }
 
-	printf("throttle desired %.2f \r\n\n", throttle_desired);
-	printf("steer desired %.2f ", steer_desired);
-	printf("steer measured %.2f \r\n", steer_measured);
-	printf("brake desired %.2f ", brake_desired);
-	printf("brake measured %.2f \r\n", brake_measured);
-	printf("speed desired %.2f  ", speed_desired);
-	printf("speed measured %.2f \r\n", speed_measured);
-	printf("\r\n");
+  printf("throttle desired %.2f \r\n\n", throttle_desired);
+  printf("steer desired %.2f ", steer_desired);
+  printf("steer measured %.2f \r\n", steer_measured);
+  printf("brake desired %.2f ", brake_desired);
+  printf("brake measured %.2f \r\n", brake_measured);
+  printf("speed desired %.2f  ", speed_desired);
+  printf("speed measured %.2f \r\n", speed_measured);
+  printf("\r\n");
 }
 
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan1)
 {
   if (HAL_CAN_GetRxMessage(hcan1, CAN_RX_FIFO0, &RxHeader, CAN_RxData) != HAL_OK)
   {
-	  Error_Handler();
+    Error_Handler();
   }
 
   if (RxHeader.StdId == 0x101)
   {
-	  speed_measured = CAN_RxData[0] / 10.0;
+    speed_measured = CAN_RxData[0] / 10.0;
   }
 
   if (RxHeader.StdId == 0x102)
   {
-	  brake_measured = CAN_RxData[0];
+    brake_measured = CAN_RxData[0];
   }
 
   if (RxHeader.StdId == 0x103)
   {
-	  steer_measured = CAN_RxData[0] - steer_max;
+    steer_measured = CAN_RxData[0] - steer_max;
   }
 
   if (RxHeader.StdId == 0x104)
   {
-	  steering_wheel = CAN_RxData[0] - steer_max;
+    steering_wheel = CAN_RxData[0] - steer_max;
   }
 }
 
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
-	// 40Hz - 25ms handle gokart command and send to subsystems
-	if (htim == &htim6) {
-		gokart_mode = app.control_mode;
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+	// 40Hz - 25ms handles braking on control disconnect
+  if (htim == &htim13)
+  {
+	  printf("\r\nControl State: %d", ctrl_connected);
+	  ctrl_connected = false;
+  }
+  // 40Hz - 25ms handle gokart command and send to subsystems
+  if (htim == &htim6)
+  {
+    gokart_mode = app.control_mode;
 
-		if (gokart_mode == 0){
-			handle_remote_command();
-		} else if (gokart_mode == 2){
-			handle_manual_command();
-		}
-		cast_command();
-		send_command();
+    if (gokart_mode == 0)
+    {
+      handle_remote_command();
+    }
+    else if (gokart_mode == 2)
+    {
+      // handle_manual_command();
+      brake_desired = brake_max;
+      throttle_desired = 0.0;
+    }
+    cast_command();
+    send_command();
+  }
 
-	}
+  // 40Hz - 25ms send out gokart drive info to higher level device
+  if (htim == &htim7)
+  {
+    // the current gokart drive state information
+    send_gokart_info(steer_measured, speed_measured, 1);
+  }
 
-	// 40Hz - 25ms send out gokart drive info to higher level device
-	if (htim == &htim7){
-		 // the current gokart drive state information
-	     send_gokart_info(steer_measured, speed_measured, 1);
-	}
+  // 10Hz - 100ms send out gokart drive command to higher level device
+  if (htim == &htim10)
+  {
+    send_gokart_info(steer_desired, speed_desired, 0);
+  }
 
-	// 10Hz - 100ms send out gokart drive command to higher level device
-	if(htim == &htim10){
-	    send_gokart_info(steer_desired, speed_desired, 0);
-	}
-
-	// 5Hz - 200ms print gokart info
-	if (htim == &htim11){
-//		 print_info();
-		if (gokart_mode == 1){
-			handle_autonomous_command();
-			cast_command();
-			send_command();
-		}
-	}
+  // 5Hz - 200ms print gokart info
+  if (htim == &htim11)
+  {
+    //		 print_info();
+    if (gokart_mode == 1)
+    {
+      handle_autonomous_command();
+      cast_command();
+      send_command();
+    }
+  }
 }
 
 /* USER CODE END 0 */
@@ -434,6 +496,7 @@ int main(void)
   MX_TIM7_Init();
   MX_TIM10_Init();
   MX_TIM11_Init();
+  MX_TIM13_Init();
   /* USER CODE BEGIN 2 */
 
   main_app = &app;
@@ -445,7 +508,6 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-
   }
     /* USER CODE END WHILE */
 
@@ -863,6 +925,37 @@ static void MX_TIM11_Init(void)
 }
 
 /**
+  * @brief TIM13 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM13_Init(void)
+{
+
+  /* USER CODE BEGIN TIM13_Init 0 */
+
+  /* USER CODE END TIM13_Init 0 */
+
+  /* USER CODE BEGIN TIM13_Init 1 */
+
+  /* USER CODE END TIM13_Init 1 */
+  htim13.Instance = TIM13;
+  htim13.Init.Prescaler = 9999;
+  htim13.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim13.Init.Period = 199;
+  htim13.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim13.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
+  if (HAL_TIM_Base_Init(&htim13) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM13_Init 2 */
+  HAL_TIM_Base_Start_IT(&htim13);
+  /* USER CODE END TIM13_Init 2 */
+
+}
+
+/**
   * @brief USART2 Initialization Function
   * @param None
   * @retval None
@@ -1068,21 +1161,21 @@ static void MX_GPIO_Init(void)
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
-	/* User can add his own implementation to report the HAL error return state */
-	__disable_irq();
-	HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
+  /* User can add his own implementation to report the HAL error return state */
+  __disable_irq();
+  HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
 
-	HAL_Delay(500);
+  HAL_Delay(500);
 
-	HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
 
-	HAL_Delay(500);
-//	while (1) {
-//	}
+  HAL_Delay(500);
+  //	while (1) {
+  //	}
   /* USER CODE END Error_Handler_Debug */
 }
 
@@ -1098,7 +1191,7 @@ void assert_failed(uint8_t *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
-	 ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+   ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
