@@ -23,4 +23,7 @@ extern UART_HandleTypeDef huart2;
 
 #define SPEKTRUM_UART &huart2
 
+#define CTRL_SATURATION_CTR 50
+#define CTRL_SATURATION_THRESHOLD 40
+
 #endif

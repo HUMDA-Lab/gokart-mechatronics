@@ -14,7 +14,9 @@ float SPEKTRUM_STEER_NEUTRAL = 1065.0;
 #define JOY_EMK_INDEX 4
 #define JOY_MODE_INDEX 5
 
-extern volatile bool ctrl_connected;
+#define MEASURE_TIME_BETWEEN_PACKETS 0
+
+extern volatile int ctrl_connected;
 int prev_time = 0;
 
 static void joy_steer_to_steer(app_state_t *app)
@@ -91,9 +93,12 @@ static void handle_spektrum_msg(const spektrum_internal_msg_t *msg, void *contex
 	spektrum_msg_to_state(msg, &app->rc_receiver_state, (long)HAL_GetTick());
 	convert_channels_to_commands(app);
 
-	ctrl_connected = true;
-//	printf("\r\n Time: %d", HAL_GetTick()-prev_time);
-//	prev_time = HAL_GetTick();
+	if (ctrl_connected < CTRL_SATURATION_CTR)
+		ctrl_connected++;
+#if MEASURE_TIME_BETWEEN_PACKETS
+	printf("\r\n Time: %d", HAL_GetTick()-prev_time);
+	prev_time = HAL_GetTick();
+#endif
 }
 
 void app_run(app_state_t *app)

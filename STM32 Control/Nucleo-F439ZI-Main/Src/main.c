@@ -107,7 +107,7 @@ float i_term = 0.0;
 float d_term = 0.0;
 
 //Control Disconnect variable
-volatile bool ctrl_connected = false;
+volatile int ctrl_connected = 0;
 
 // char UART_TxData[6];
 
@@ -402,13 +402,20 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan1)
   }
 }
 
+void emergency_stop()
+{
+  brake_desired = brake_max;
+  throttle_desired = 0.0;
+}
+
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	// 40Hz - 25ms handles braking on control disconnect
   if (htim == &htim13)
   {
 	  printf("\r\nControl State: %d", ctrl_connected);
-	  ctrl_connected = false;
+    if(ctrl_connected > 0)
+      ctrl_connected--;
   }
   // 40Hz - 25ms handle gokart command and send to subsystems
   if (htim == &htim6)
@@ -422,9 +429,14 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     else if (gokart_mode == 2)
     {
       // handle_manual_command();
-      brake_desired = brake_max;
-      throttle_desired = 0.0;
+      emergency_stop();
     }
+
+    if (ctrl_connected < CTRL_SATURATION_THRESHOLD)
+    {
+      emergency_stop();
+    }
+
     cast_command();
     send_command();
   }
