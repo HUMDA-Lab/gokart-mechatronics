@@ -230,10 +230,19 @@ void handle_remote_command()
 
 void handle_autonomous_command()
 {
-  uint8_t place_holder[10];
-  sscanf(drive_msg, "%s %f %s %f", place_holder, &steer_desired, place_holder, &speed_desired);
-  autonomous_speed_throttle_pid();
-  //	compute_auto_brake();
+  printf("acc_percent: %f\r\n", app.acc_percent);
+  if (app.acc_percent <= 0.00)
+  {
+    emergency_stop();
+  }
+  else
+  {
+    brake_desired = 0.0;   
+    uint8_t place_holder[10];
+    sscanf(drive_msg, "%s %f %s %f", place_holder, &steer_desired, place_holder, &speed_desired);
+    autonomous_speed_throttle_pid();
+    //	compute_auto_brake();
+  }
 }
 
 void handle_manual_command()
@@ -282,6 +291,7 @@ void autonomous_speed_throttle_pid()
   printf("throttle_desired: %f \r\n", throttle_desired);
   printf("speed_desired: %f \r\n", speed_desired);
   printf("speed_measured: %f \r\n", speed_measured);
+  printf("brake measured: %f\r\n", brake_measured);
   printf("\r\n");
 }
 
@@ -413,7 +423,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	// 40Hz - 25ms handles braking on control disconnect
   if (htim == &htim13)
   {
-	  printf("\r\nControl State: %d", ctrl_connected);
+	  //printf("\r\nControl State: %d", ctrl_connected);
     if(ctrl_connected > 0)
       ctrl_connected--;
   }
