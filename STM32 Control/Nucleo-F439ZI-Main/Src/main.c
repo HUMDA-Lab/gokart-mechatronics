@@ -226,6 +226,8 @@ void handle_remote_command()
   }
 
   steer_desired = steer_percent * steer_max;
+
+  printf("steer desired: %f\r\n", steer_desired);
 }
 
 void handle_autonomous_command()
