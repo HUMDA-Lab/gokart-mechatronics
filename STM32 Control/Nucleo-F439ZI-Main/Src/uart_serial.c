@@ -15,6 +15,11 @@ void uart_serial_stop(UART_HandleTypeDef *huart) {
 
 
 // make sure you go to stm32f4xx_it.c and replace the default usart6 handler with this function
+/**
+ * @brief UART interface with computer via USB-TTL serial ports
+ * 
+ * @param huart 
+ */
 void uart_serial_irq_handler(UART_HandleTypeDef *huart) {
 	// If data overrun, clear the overrun flag and reset
 	if (__HAL_UART_GET_FLAG(huart, UART_FLAG_ORE)) {

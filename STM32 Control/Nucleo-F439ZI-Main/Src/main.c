@@ -420,6 +420,10 @@ void emergency_stop()
   throttle_desired = 0.0;
 }
 
+/**
+ * @brief Periodic call back function triggered by TIM modules. Execute different functions depending on htim.
+ * @param htim The TIM instance that triggers this call back.
+ */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	// 40Hz - 25ms handles braking on control disconnect
