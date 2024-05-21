@@ -227,6 +227,7 @@ void handle_remote_command()
 
   steer_desired = steer_percent * steer_max;
 
+  printf("throttle desired: %f\r\n", throttle_desired);
   printf("steer desired: %f\r\n", steer_desired);
 }
 
@@ -395,21 +396,29 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan1)
 
   if (RxHeader.StdId == 0x101)
   {
+    // for CAN communication debugging
+    printf("Receive from SPEED SENSOR\r\n");
     speed_measured = CAN_RxData[0] / 10.0;
   }
 
   if (RxHeader.StdId == 0x102)
   {
+    // for CAN communication debugging
+    printf("Receive from BREAK PRESSURE SENSOR\r\n");
     brake_measured = CAN_RxData[0];
   }
 
   if (RxHeader.StdId == 0x103)
   {
+    // for CAN communication debugging
+    printf("Receive from STEER SENSOR\r\n");
     steer_measured = CAN_RxData[0] - steer_max;
   }
 
   if (RxHeader.StdId == 0x104)
   {
+    // for CAN communication debugging
+    printf("Receive from STEERING WHEEL SENSOR\r\n");
     steering_wheel = CAN_RxData[0] - steer_max;
   }
 }
@@ -440,13 +449,13 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
     if (gokart_mode == 0)
     {
-      // for remode debugging
+      // for remote debugging
       printf("MODE 0 - REMOTE\r\n");
       handle_remote_command();
     }
     else if (gokart_mode == 2)
     {
-      // for remode debugging
+      // for remote debugging
       printf("MODE 2 - EMERGENCY BREAK\r\n");
       // handle_manual_command();
       emergency_stop();
@@ -480,7 +489,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     //		 print_info();
     if (gokart_mode == 1)
     {
-      // for remode debugging
+      // for remote debugging
       printf("MODE 1 - AUTONOMOUS DRIVING\r\n");
 
       handle_autonomous_command();

@@ -215,6 +215,9 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan1)
   // 0x100 is the can device id of the main controller
   if (RxHeader.StdId == 0x100)
   {
+    // for CAN communication debugging
+    printf("Receive from MAIN CONTROLLER\r\n");
+    
 	  // recover raw steer data [-50 - 50]
 	  steer_desired = CAN_RxData[0] - steer_max;
 	  steer_desired = wrap_to_pi(steer_desired);

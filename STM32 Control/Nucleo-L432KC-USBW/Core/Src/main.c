@@ -141,6 +141,9 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan1)
 
   if ((RxHeader.StdId == 0x100))
   {
+    // for CAN communication debugging
+    printf("Receive from MAIN CONTROLLER\r\n");
+    
 	  steer_desired = (float)CAN_RxData[0] - steer_max;
   }
 }

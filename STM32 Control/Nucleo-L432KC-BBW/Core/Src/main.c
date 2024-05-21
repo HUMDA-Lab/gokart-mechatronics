@@ -106,6 +106,8 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan1)
   // 0x100 is the can device id of the main controller
   if ((RxHeader.StdId == 0x100))
   {
+    // for CAN communication debugging
+    printf("Receive from MAIN CONTROLLER\r\n");
 	  // first compute the brake percentage then the pressure needed
 	  pressure_desired = CAN_RxData[1];
   }
