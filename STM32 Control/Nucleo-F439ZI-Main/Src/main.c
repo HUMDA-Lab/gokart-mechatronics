@@ -440,10 +440,14 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
     if (gokart_mode == 0)
     {
+      // for remode debugging
+      printf("MODE 0 - REMOTE\r\n");
       handle_remote_command();
     }
     else if (gokart_mode == 2)
     {
+      // for remode debugging
+      printf("MODE 2 - EMERGENCY BREAK\r\n");
       // handle_manual_command();
       emergency_stop();
     }
@@ -476,6 +480,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     //		 print_info();
     if (gokart_mode == 1)
     {
+      // for remode debugging
+      printf("MODE 1 - AUTONOMOUS DRIVING\r\n");
+
       handle_autonomous_command();
       cast_command();
       send_command();
