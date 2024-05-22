@@ -438,7 +438,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	// 40Hz - 25ms handles braking on control disconnect
   if (htim == &htim13)
   {
-	  //printf("\r\nControl State: %d", ctrl_connected);
+    // for remote connection debugging
+	  printf("\r\nControl State: %d", ctrl_connected);
     if(ctrl_connected > 0)
       ctrl_connected--;
   }
