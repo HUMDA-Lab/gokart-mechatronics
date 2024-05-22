@@ -171,6 +171,12 @@ void mergearray(char a[], char b[], char c[], char d[], int arr1size, int arr2si
   }
 }
 
+/**
+ * @brief Send the gokart info to higher level controller
+ * @param steer kart steering angle
+ * @param speed kart speed
+ * @param is_info 0: send desired info, 1: send measured info
+ */
 void send_gokart_info(float steer, float speed, int is_info)
 {
   char data[6];
