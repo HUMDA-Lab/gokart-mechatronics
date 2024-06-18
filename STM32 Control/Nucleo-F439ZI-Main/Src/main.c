@@ -171,12 +171,6 @@ void mergearray(char a[], char b[], char c[], char d[], int arr1size, int arr2si
   }
 }
 
-/**
- * @brief Send the gokart info to higher level controller
- * @param steer kart steering angle
- * @param speed kart speed
- * @param is_info 0: send desired info, 1: send measured info
- */
 void send_gokart_info(float steer, float speed, int is_info)
 {
   char data[6];
@@ -205,59 +199,37 @@ void send_gokart_info(float steer, float speed, int is_info)
   HAL_UART_Transmit(&huart6, info_out, sizeof(info_out), 10); // Sending in normal mode
 }
 
-
 void handle_remote_command()
 {
   float acc_percent = app.acc_percent;
   float gear_shift = app.gokart_status;
   float steer_percent = app.steer_percent;
 
-  // map acc_percent to speed desired
-  speed_desired = max(0.0, acc_percent * 5.0); // mapping throttle -> (0-1) to speed (0-5), ensuring no negative speed
-
-  float Kp = 2.0; 
-  float Ki = 0.2;
-  float Kd = 2.0;
-  float pid_cycle_time = 0.200;
-
-
-  pid_speed_error = speed_desired - speed_measured;
-  p_term = Kp * pid_speed_error;
-  pid_integral += pid_speed_error * pid_cycle_time;
-  i_term = Ki * pid_integral;
-  pid_derivative = (pid_speed_error - pid_speed_error_pre) / pid_cycle_time;
-  d_term = Kd * pid_derivative;
-  pid_speed_error_pre = pid_speed_error;
-
-  // calculate the desired throttle based on PID terms
-  throttle_desired = p_term + i_term + d_term;
-
-  // throttle bounded
-  throttle_desired = max(min(throttle_desired, 100.0), 0.0);
-
-  // if acc_percent is negative, apply brakes
-  if (acc_percent < 0.0)
+  if (acc_percent > 0.00)
   {
-    throttle_desired = 0.0;
-    brake_desired = -acc_percent * brake_max; // Apply proportional brake based on negative acc_percent
+    throttle_desired = 1.75*acc_percent * 100.0;
+    throttle_desired  = max(min(throttle_desired, 100.0), 0.0);
+    brake_desired = 0.0;
   }
   else
   {
-    brake_desired = 0.0;
+    throttle_desired = 0.0;
+    brake_desired = -acc_percent * brake_max;
   }
 
-  // set motor direction based on gear_shift
-  motor_direction = (gear_shift == 0) ? 0 : 1;
+  if (gear_shift == 0)
+  {
+    motor_direction = 0;
+  }
+  else
+  {
+    motor_direction = 1;
+  }
 
-  // set steer desired based on steer_percent
   steer_desired = steer_percent * steer_max;
 
-  printf("throttle desired: %f\r\n", throttle_desired);
   printf("steer desired: %f\r\n", steer_desired);
-  printf("throttle desired: %f\r\n", throttle_desired);
-  printf("brake desired: %f\r\n", brake_desired);
 }
-
 
 void handle_autonomous_command()
 {
@@ -268,7 +240,7 @@ void handle_autonomous_command()
   }
   else
   {
-    brake_desired = 0.0;   
+    brake_desired = 0.0;
     uint8_t place_holder[10];
     sscanf(drive_msg, "%s %f %s %f", place_holder, &steer_desired, place_holder, &speed_desired);
     autonomous_speed_throttle_pid();
@@ -284,10 +256,6 @@ void handle_manual_command()
 #define MAX_THROTTLE 40 // replace with your maximum throttle value
 #define MIN_THROTTLE 15 // replace with your minimum throttle value
 #define WAVE_FREQ 1     // frequency of the cosine wave in Hz
-
-float start_speed_threshold = 1;
-float start_throttle_boost = 10;
-
 int loop_count = 0.0;
 // Assuming you call this function every 25ms (40Hz)
 float calculateThrottle(int loopCount)
@@ -298,42 +266,26 @@ float calculateThrottle(int loopCount)
   return amplitude * cos(phase) + offset;
 }
 
-// added softstart
 void autonomous_speed_throttle_pid()
 {
-  float Kp = 2.0; // Proportional gain
-  float Ki = 0.2; // Integral gain
-  float Kd = 2.0; // Derivative gain
-  float min_throttle = 0.0; // Minimum throttle value to ensure initial movement
-  float pid_cycle_time = 0.200; // PID cycle time in seconds
+  float Kp = 75; // Best Kp = 2.0
+  float Ki = 0.0;
+  float Kd = 0.0;
+  float min_throttle = 90.0;
+  float pid_cycle_time = 0.200;
 
-  // PID error terms
   pid_speed_error = speed_desired - speed_measured;
   p_term = Kp * pid_speed_error;
+
   pid_integral += pid_speed_error * pid_cycle_time;
   i_term = Ki * pid_integral;
+
   pid_derivative = (pid_speed_error - pid_speed_error_pre) / pid_cycle_time;
   d_term = Kd * pid_derivative;
   pid_speed_error_pre = pid_speed_error;
 
-  // Calculate the desired throttle based on PID terms
   throttle_desired = min_throttle + p_term + d_term + i_term;
 
-  // Boost if the go-kart is at rest and a throttle command is given
-  // Please change speed_measured accordingly
-  if (speed_measured < start_speed_threshold && speed_desired > 1.0)
-  {
-    // Change throttle_desired accordingly
-    throttle_desired += start_throttle_boost; // Apply a temporary boost
-    if (throttle_desired >= 50){
-    	return;
-    }
-  }
-
-  // Ensure throttle doesn't exceed the maximum value
-  throttle_desired = min(throttle_desired, 100.0);
-
-  // Print the PID terms and the resulting throttle for debugging
   printf("p_term: %f \r\n", p_term);
   printf("i_term: %f \r\n", i_term);
   printf("d_term: %f \r\n", d_term);
@@ -444,29 +396,21 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan1)
 
   if (RxHeader.StdId == 0x101)
   {
-    // for CAN communication debugging
-    printf("Receive from SPEED SENSOR\r\n");
     speed_measured = CAN_RxData[0] / 10.0;
   }
 
   if (RxHeader.StdId == 0x102)
   {
-    // for CAN communication debugging
-    printf("Receive from BREAK PRESSURE SENSOR\r\n");
     brake_measured = CAN_RxData[0];
   }
 
   if (RxHeader.StdId == 0x103)
   {
-    // for CAN communication debugging
-    printf("Receive from STEER SENSOR\r\n");
     steer_measured = CAN_RxData[0] - steer_max;
   }
 
   if (RxHeader.StdId == 0x104)
   {
-    // for CAN communication debugging
-    printf("Receive from STEERING WHEEL SENSOR\r\n");
     steering_wheel = CAN_RxData[0] - steer_max;
   }
 }
@@ -486,8 +430,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	// 40Hz - 25ms handles braking on control disconnect
   if (htim == &htim13)
   {
-    // for remote connection debugging
-	  printf("\r\nControl State: %d", ctrl_connected);
+	  //printf("\r\nControl State: %d", ctrl_connected);
     if(ctrl_connected > 0)
       ctrl_connected--;
   }
@@ -498,14 +441,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
     if (gokart_mode == 0)
     {
-      // for remote debugging
-      printf("MODE 0 - REMOTE\r\n");
       handle_remote_command();
     }
     else if (gokart_mode == 2)
     {
-      // for remote debugging
-      printf("MODE 2 - EMERGENCY BREAK\r\n");
       // handle_manual_command();
       emergency_stop();
     }
@@ -538,9 +477,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     //		 print_info();
     if (gokart_mode == 1)
     {
-      // for remote debugging
-      printf("MODE 1 - AUTONOMOUS DRIVING\r\n");
-
       handle_autonomous_command();
       cast_command();
       send_command();
