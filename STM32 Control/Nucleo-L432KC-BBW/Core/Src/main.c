@@ -428,9 +428,9 @@ static void MX_CAN1_Init(void)
   canfilterconfig.FilterActivation = CAN_FILTER_ENABLE;
   canfilterconfig.FilterBank = 10;  // which filter bank to use from the assigned ones
   canfilterconfig.FilterFIFOAssignment = CAN_FILTER_FIFO0;
-  canfilterconfig.FilterIdHigh = 0;
+  canfilterconfig.FilterIdHigh = 0x100 << 5;  // Standard 11-bit ID left-aligned in a 16-bit field
   canfilterconfig.FilterIdLow = 0x0000;
-  canfilterconfig.FilterMaskIdHigh = 0;
+  canfilterconfig.FilterMaskIdHigh = 0xFFE0;  // Mask to match the ID exactly (11-bit ID left-aligned, 5 bits for mask)
   canfilterconfig.FilterMaskIdLow = 0x0000;
   canfilterconfig.FilterMode = CAN_FILTERMODE_IDMASK;
   canfilterconfig.FilterScale = CAN_FILTERSCALE_32BIT;
