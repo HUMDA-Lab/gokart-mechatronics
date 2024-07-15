@@ -200,20 +200,20 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 
     // Apply corrected duty cycle for steering control
     if(duty_cycle < 0){
-        printf("\n\rSteer Left!\r\n");
+//        printf("\n\rSteer Left!\r\n");
         TIM1->CCR1 = 0;
         TIM1->CCR2 = -duty_cycle;
     }
     else if(duty_cycle > 0){
-        printf("\n\rSteer Right!\r\n");
+//        printf("\n\rSteer Right!\r\n");
         TIM1->CCR1 = duty_cycle;
         TIM1->CCR2 = 0;
     }
 
-    printf("\r\nSteer Measured: %f", steer_measured);
-    printf("\r\nSteer Desired: %f", steer_desired);
-    printf("\r\nSteer Error: %f", steer_error);
-    printf("\r\nDuty Cycle: %d", duty_cycle);
+//    printf("\r\nSteer Measured: %f", steer_measured);
+//    printf("\r\nSteer Desired: %f", steer_desired);
+//    printf("\r\nSteer Error: %f", steer_error);
+//    printf("\r\nDuty Cycle: %d", duty_cycle);
 
   }
 
@@ -397,11 +397,11 @@ static void MX_CAN1_Init(void)
 
   /* USER CODE END CAN1_Init 1 */
   hcan1.Instance = CAN1;
-  hcan1.Init.Prescaler = 16;
+  hcan1.Init.Prescaler = 2;
   hcan1.Init.Mode = CAN_MODE_NORMAL;
   hcan1.Init.SyncJumpWidth = CAN_SJW_1TQ;
-  hcan1.Init.TimeSeg1 = CAN_BS1_11TQ;
-  hcan1.Init.TimeSeg2 = CAN_BS2_8TQ;
+  hcan1.Init.TimeSeg1 = CAN_BS1_13TQ;
+  hcan1.Init.TimeSeg2 = CAN_BS2_2TQ;
   hcan1.Init.TimeTriggeredMode = DISABLE;
   hcan1.Init.AutoBusOff = ENABLE;
   hcan1.Init.AutoWakeUp = DISABLE;

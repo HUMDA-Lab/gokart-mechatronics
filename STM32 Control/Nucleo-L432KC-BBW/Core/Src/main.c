@@ -82,13 +82,13 @@ uint8_t CAN_TxData[4];
 uint8_t CAN_RxData[4];
 
 // important: don't convert to int or it will get reset to 0 for unknown reason
-double first_met = 1.0;
+uint8_t first_met = 0;
 
-double pressure_desired = 0.0;
-double pressure_measured = 0.0;
+uint32_t pressure_desired = 0;
+uint32_t pressure_measured = 0;
 
-double pressure_measured_avg = 0.0;
-double pressure_measured_sum = 0.0;
+uint32_t pressure_measured_avg = 0;
+uint32_t pressure_measured_sum = 0;
 
 // uart print to serial terminal for debugging purpose
 int _write(int file, char *ptr, int len){
@@ -116,28 +116,28 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan1)
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 	// 100Hz = 10ms breaking linear actuator control loop
 	if (htim == &htim6){
-	  int brake_duty_cycle;
-	  int max_duty_cycle = 400;
+	  uint32_t brake_duty_cycle;
+	  uint16_t max_duty_cycle = 400;
 
-	  double pressure_error = pressure_measured_avg - pressure_desired;
+	  int32_t pressure_error = (int32_t)((int32_t)pressure_measured_avg - (int32_t)pressure_desired);
 
 	  // brake error very small
-	  int error_met = pressure_error > -15.0 && pressure_error < 15.0;
+	  uint8_t error_met = ((pressure_error > -15) && (pressure_error < 15));
 
 	  // we want to first narrow down to a small range of error
 	  // and then increase this bound to avoid oscillation
-	  if (pressure_error > -7.5 && pressure_error < 7.5){
-		  first_met = 1.0;
+	  if ((pressure_error > -10) || (pressure_error < 10)){
+		  first_met = 1;
 	  }
 
 	  // if any conditions are met, lock the motor and cutoff power
-	  if (error_met && first_met){
+	  if ((error_met) && (first_met == 1)){
 		  HAL_GPIO_WritePin(GPIOA, Motor1_Pin, GPIO_PIN_RESET);
 		  HAL_GPIO_WritePin(GPIOA, Motor2_Pin, GPIO_PIN_RESET);
 		  brake_duty_cycle = 0;
 	  }
 	  else{
-		  first_met = 0.0;
+		  first_met = 0;
 
 		  // set the movement direction of the motor
 		  if(pressure_error > 0.0){
@@ -151,9 +151,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 		  // note that the backward force (loosing the brake) is much
 		  // smaller than the forward force required (pushing the brake)
 		  if(pressure_error > 0.0){
-			  brake_duty_cycle = pressure_error * 10.0;
+			  brake_duty_cycle = (uint32_t)(pressure_error * 10);
 		  } else{
-			  brake_duty_cycle = -pressure_error * 20.0;
+			  brake_duty_cycle = (uint32_t)((-1)*pressure_error * 20);
 		  }
 
 		  if(brake_duty_cycle > max_duty_cycle){
@@ -161,9 +161,12 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 		  }
 	  }
 
-	  // send out speed control pwm
-	  TIM1->CCR1 = brake_duty_cycle;
-	  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
+	  if(HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_1) == HAL_OK)
+	  {
+		  // send out speed control pwm
+		  TIM1->CCR1 = brake_duty_cycle;
+		  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
+	  }
   }
 
   // 100ms = 10Hz
@@ -173,11 +176,12 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 
   // 5Hz = 200ms send out measured breaking pressure to can bus
   if (htim == &htim16){
-	  CAN_TxData[0] = (int)(pressure_measured_avg);
+	  CAN_TxData[0] = (uint8_t)(pressure_measured_avg);
+	  CAN_TxData[1] = (uint8_t)(first_met);
 	  HAL_CAN_AddTxMessage(&hcan1, &TxHeader, CAN_TxData, &TxMailbox);
 
-	  printf("brake pressure measured: %.2f PSI \r\n", pressure_measured_avg);
-	  printf("brake pressure desired: %.2f PSI \r\n", pressure_desired);
+//	  printf("brake pressure measured: %.2f PSI \r\n", pressure_measured_avg);
+//	  printf("brake pressure desired: %.2f PSI \r\n", pressure_desired);
   }
 }
 
@@ -222,14 +226,14 @@ int main(void)
 
   // IMPORTANT: DO NOT MOVE THIS COUNTER TO GLOBAL VARIABLE
   // OR IT WILL BE RESET EVERY FEW LOOPS FOR NO REASON
-  int count_max = 50;
-  int pressure_count = 0;
+  uint8_t count_max = 50;
+  uint8_t pressure_count = 0;
 
-  double pressure_voltage;
-  double pressure_voltage_max = 5.0;
-  double pressure_voltage_min = 1.0;
+  float pressure_voltage;
+  float pressure_voltage_max = 4.5;
+  float pressure_voltage_min = 0.7;
 
-  double pressure_abs_max = 500.0;
+  float pressure_abs_max = 255.0;
 
   /* USER CODE END 2 */
 
@@ -242,11 +246,11 @@ int main(void)
 
 	  // reference adc reading [0-4095], reference voltage [0-3.3v]
 	  // however, empirical test show that 3.7v gives more accurate reading
-	  pressure_voltage = HAL_ADC_GetValue(&hadc1) / 4095.0 * 3.7;
-	  pressure_measured = (pressure_voltage - pressure_voltage_min) / (pressure_voltage_max - pressure_voltage_min) * pressure_abs_max;
+	  pressure_voltage = ((float)(HAL_ADC_GetValue(&hadc1)) / 4095.0) * 3.7;
+	  pressure_measured = (uint16_t)((pressure_voltage - pressure_voltage_min) / (pressure_voltage_max - pressure_voltage_min) * pressure_abs_max);
 
 	  // Throw out out of bound readings to reduce errors
-	  if (pressure_measured > 0.0 && pressure_measured < pressure_abs_max){
+	  if (pressure_measured > 0 && pressure_measured < pressure_abs_max){
 		  pressure_measured_sum += pressure_measured;
 		  pressure_count += 1;
 	  }
@@ -259,7 +263,7 @@ int main(void)
 		  }
 
 		  pressure_count = 0;
-		  pressure_measured_sum = 0.0;
+		  pressure_measured_sum = 0;
 	  }
   }
   /* USER CODE END WHILE */
@@ -402,11 +406,11 @@ static void MX_CAN1_Init(void)
 
   /* USER CODE END CAN1_Init 1 */
   hcan1.Instance = CAN1;
-  hcan1.Init.Prescaler = 16;
+  hcan1.Init.Prescaler = 2;
   hcan1.Init.Mode = CAN_MODE_NORMAL;
   hcan1.Init.SyncJumpWidth = CAN_SJW_1TQ;
-  hcan1.Init.TimeSeg1 = CAN_BS1_11TQ;
-  hcan1.Init.TimeSeg2 = CAN_BS2_8TQ;
+  hcan1.Init.TimeSeg1 = CAN_BS1_13TQ;
+  hcan1.Init.TimeSeg2 = CAN_BS2_2TQ;
   hcan1.Init.TimeTriggeredMode = DISABLE;
   hcan1.Init.AutoBusOff = ENABLE;
   hcan1.Init.AutoWakeUp = DISABLE;

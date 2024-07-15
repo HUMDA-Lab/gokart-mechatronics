@@ -96,7 +96,7 @@ double kd_e = 1.00;
 
 double steer_measured = 0.0;
 double steer_desired = 0.0;
-double steer_offset = -106.0-21.77;
+double steer_offset = -65;
 double steer_max = 55.0;
 
 double current = 0.0;
@@ -191,7 +191,7 @@ void send_info(){
 	CAN_TxData[0] = (int)(steer_measured + steer_max);
     HAL_CAN_AddTxMessage(&hcan1, &TxHeader, CAN_TxData, &TxMailbox);
 
-    printf(
+/*    printf(
   	  "steering angle desired: %.2f \r\n", steer_desired
     );
     printf(
@@ -202,7 +202,7 @@ void send_info(){
     );
     printf(
   	  "control current: %.2f \r\n", current
-    );
+    );*/
 }
 
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan1)
@@ -361,11 +361,11 @@ static void MX_CAN1_Init(void)
 
   /* USER CODE END CAN1_Init 1 */
   hcan1.Instance = CAN1;
-  hcan1.Init.Prescaler = 16;
+  hcan1.Init.Prescaler = 2;
   hcan1.Init.Mode = CAN_MODE_NORMAL;
   hcan1.Init.SyncJumpWidth = CAN_SJW_1TQ;
-  hcan1.Init.TimeSeg1 = CAN_BS1_11TQ;
-  hcan1.Init.TimeSeg2 = CAN_BS2_8TQ;
+  hcan1.Init.TimeSeg1 = CAN_BS1_13TQ;
+  hcan1.Init.TimeSeg2 = CAN_BS2_2TQ;
   hcan1.Init.TimeTriggeredMode = DISABLE;
   hcan1.Init.AutoBusOff = ENABLE;
   hcan1.Init.AutoWakeUp = DISABLE;
