@@ -92,6 +92,10 @@ float speed_window4 = 0.0;
 float speed_window5 = 0.0;
 
 float speed_measured = 0.0;
+float speed_measured_rps = 0.0;
+float speed_measured_motor_rps = 0.0;
+float motor_ratio = 2.71;
+
 float speed_desired = 0.0;
 float speed_max = 6.0;
 float speed_accumu = 0.0;
@@ -142,7 +146,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 
 	  // we have a new magnet passing through
 	  if(speed_sensor_val != speed_sensor_pre){
-		  speed_accumu += 18.0; // 10 magnets (360/10/2 = 18 degrees per switch)
+		  speed_accumu += 30.0; // 10 magnets (360/10/2 = 18 degrees per switch)
 		  speed_sensor_pre = speed_sensor_val;
 	  }
   }
@@ -153,13 +157,19 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 	  speed_window4 = speed_window3;
 	  speed_window3 = speed_window2;
 	  speed_window2 = speed_window1;
-	  speed_window1 = speed_accumu / 360.0 * wheel_diameter * 3.14 / 0.1;
+	  speed_window1 = speed_accumu / 360.0 * 5; //need to be multiplied with frequency
 
 	  speed_accumu = 0.0;
-	  speed_measured = (speed_window1 + speed_window2 + speed_window3 + speed_window4 + speed_window5) / 5.0;
+	  // here the 5 is avg window size
+	  speed_measured_rps = (speed_window1 + speed_window2 + speed_window3 + speed_window4 + speed_window5) / 5.0;
+	  speed_measured = speed_measured_rps * wheel_diameter * 3.14;
+	  speed_measured_motor_rps = speed_measured_rps * motor_ratio;
 
 	  // send out measured speed to can bus
-	  CAN_TxData[0] = (int)(speed_measured * 10.0);
+	  CAN_TxData[0] = (int)(speed_measured);
+	  CAN_TxData[1] = (int)(speed_measured_rps);
+	  CAN_TxData[2] = (int)(speed_measured_motor_rps);
+
 	  HAL_CAN_AddTxMessage(&hcan1, &TxHeader, CAN_TxData, &TxMailbox);
 
 /*	  printf("throttle desired: %d \r\n", throttle_desired);

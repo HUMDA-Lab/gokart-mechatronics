@@ -1,0 +1,295 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: VESC1 VESC2 VESC3 VESC4 VESC5 VESC6 VESC7 VESC8 Main_ECU
+
+
+BO_ 3221225472 VECTOR__INDEPENDENT_SIG_MSG: 0 Vector__XXX
+ SG_ Command_HBrakeCurrent_V8 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "mA" Vector__XXX
+ SG_ Command_HBrakeCurrent_V7 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "mA" Vector__XXX
+ SG_ Command_HBrakeCurrent_V6 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "mA" Vector__XXX
+ SG_ Command_HBrakeCurrent_V5 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "mA" Vector__XXX
+ SG_ Command_HBrakeCurrent_V4 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "mA" Vector__XXX
+ SG_ Command_HBrakeCurrent_V3 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "mA" Vector__XXX
+ SG_ Command_HBrakeCurrent_V2 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "mA" Vector__XXX
+ SG_ Command_HBrakeCurrent_V1 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "mA" Vector__XXX
+ SG_ Command_RelativeHBrakeCurrent_V8 : 0|32@0- (0.001,0) [-100|100] "%" Vector__XXX
+ SG_ Command_RelativeHBrakeCurrent_V7 : 0|32@0- (0.001,0) [-100|100] "%" Vector__XXX
+ SG_ Command_RelativeHBrakeCurrent_V6 : 0|32@0- (0.001,0) [-100|100] "%" Vector__XXX
+ SG_ Command_RelativeHBrakeCurrent_V5 : 0|32@0- (0.001,0) [-100|100] "%" Vector__XXX
+ SG_ Command_RelativeHBrakeCurrent_V4 : 0|32@0- (0.001,0) [-100|100] "%" Vector__XXX
+ SG_ Command_RelativeHBrakeCurrent_V3 : 0|32@0- (0.001,0) [-100|100] "%" Vector__XXX
+ SG_ Command_RelativeHBrakeCurrent_V2 : 0|32@0- (0.001,0) [-100|100] "%" Vector__XXX
+ SG_ Command_RelativeHBrakeCurrent_V1 : 0|32@0- (0.001,0) [-100|100] "%" Vector__XXX
+ SG_ Setting_CurrentLimitMin_V1 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "" Vector__XXX
+ SG_ Setting_CurrentLimitMax_V1 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "" Vector__XXX
+ SG_ Setting_CurrentLimitMin_V1 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "" Vector__XXX
+ SG_ Setting_CurrentLimitMax_V1 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "" Vector__XXX
+ SG_ Command_RelativeBrakeCurrent_V1 : 0|32@0- (0.001,0) [-100|100] "%" Vector__XXX
+ SG_ Command_RelativeCurrent_V1 : 0|32@0- (0.001,0) [-100|100] "%" Vector__XXX
+ SG_ Command_POS_V1 : 0|32@0- (1,0) [-2147483648|2147483647] "RPM" Vector__XXX
+ SG_ Command_BrakeCurrent_V1 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "mA" Vector__XXX
+ SG_ Command_Current_V1 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "mA" Vector__XXX
+ SG_ Command_RPM_V1 : 0|32@0- (1,0) [-2147483648|2147483647] "RPM" Vector__XXX
+ SG_ Command_DutyCycle_V1 : 0|32@0- (0.001,0) [-100|100] "%" Vector__XXX
+ SG_ Setting_CurrentLimitMin_V2 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "" Vector__XXX
+ SG_ Setting_CurrentLimitMax_V2 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "" Vector__XXX
+ SG_ Setting_CurrentLimitMin_V2 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "" Vector__XXX
+ SG_ Setting_CurrentLimitMax_V2 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "" Vector__XXX
+ SG_ Command_RelativeBrakeCurrent_V2 : 0|32@0- (0.001,0) [-100|100] "%" Vector__XXX
+ SG_ Command_RelativeCurrent_V2 : 0|32@0- (0.001,0) [-100|100] "%" Vector__XXX
+ SG_ Command_POS_V2 : 0|32@0- (1,0) [-2147483648|2147483647] "RPM" Vector__XXX
+ SG_ Command_BrakeCurrent_V2 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "mA" Vector__XXX
+ SG_ Command_Current_V2 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "mA" Vector__XXX
+ SG_ Command_RPM_V2 : 0|32@0- (1,0) [-2147483648|2147483647] "RPM" Vector__XXX
+ SG_ Command_DutyCycle_V2 : 0|32@0- (0.001,0) [-100|100] "%" Vector__XXX
+ SG_ Setting_CurrentLimitMin_V3 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "" Vector__XXX
+ SG_ Setting_CurrentLimitMax_V3 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "" Vector__XXX
+ SG_ Setting_CurrentLimitMin_V3 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "" Vector__XXX
+ SG_ Setting_CurrentLimitMax_V3 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "" Vector__XXX
+ SG_ Command_RelativeBrakeCurrent_V3 : 0|32@0- (0.001,0) [-100|100] "%" Vector__XXX
+ SG_ Command_RelativeCurrent_V3 : 0|32@0- (0.001,0) [-100|100] "%" Vector__XXX
+ SG_ Command_POS_V3 : 0|32@0- (1,0) [-2147483648|2147483647] "RPM" Vector__XXX
+ SG_ Command_BrakeCurrent_V3 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "mA" Vector__XXX
+ SG_ Command_Current_V3 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "mA" Vector__XXX
+ SG_ Command_RPM_V3 : 0|32@0- (1,0) [-2147483648|2147483647] "RPM" Vector__XXX
+ SG_ Status_Tachometer_V3 : 0|32@0- (1,0) [0|0] "RPM" Vector__XXX
+ SG_ Status_Reserved_V3 : 0|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Status_InputVoltage_V3 : 0|16@0- (0.1,0) [0|0] "" Vector__XXX
+ SG_ Staus_MotorTemp_V3 : 0|16@0- (0.1,0) [-3276.8|3276.7] "°C" Vector__XXX
+ SG_ Staus_MosfetTemp_V3 : 0|16@0- (0.1,0) [-3276.8|3276.7] "°C" Vector__XXX
+ SG_ Status_TotalInputCurrent_V3 : 0|16@0- (0.1,0) [-3276.8|3276.7] "A" Vector__XXX
+ SG_ Status_PIDPos_V3 : 0|16@0- (0.02,0) [-655.36|655.34] "" Vector__XXX
+ SG_ Status_WattHoursCharged_V3 : 0|32@0- (1E-005,0) [-21474.83648|21474.83647] "Wh" Vector__XXX
+ SG_ Status_WattHours_V3 : 0|32@0- (1E-005,0) [-21474.83648|21474.83647] "Wh" Vector__XXX
+ SG_ Status_AmpHoursCharged_V3 : 0|32@0- (1E-005,0) [-21474.83648|21474.83647] "Ah" Vector__XXX
+ SG_ Status_AmpHours_V3 : 0|32@0- (1E-005,0) [-21474.83648|21474.83647] "Ah" Vector__XXX
+ SG_ Status_RPM_V3 : 0|32@0- (1,0) [-2147483648|2147483647] "RPM" Vector__XXX
+ SG_ Status_TotalCurrent_V3 : 0|16@0- (0.1,0) [-3276.8|3276.7] "A" Vector__XXX
+ SG_ Status_DutyCycle_V3 : 0|16@0- (0.1,0) [-100|100] "%" Vector__XXX
+ SG_ Command_DutyCycle_V3 : 0|32@0- (0.001,0) [-100|100] "%" Vector__XXX
+ SG_ Setting_CurrentLimitMin_V4 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "" Vector__XXX
+ SG_ Setting_CurrentLimitMax_V4 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "" Vector__XXX
+ SG_ Setting_CurrentLimitMin_V4 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "" Vector__XXX
+ SG_ Setting_CurrentLimitMax_V4 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "" Vector__XXX
+ SG_ Command_RelativeBrakeCurrent_V4 : 0|32@0- (0.001,0) [-100|100] "%" Vector__XXX
+ SG_ Command_RelativeCurrent_V4 : 0|32@0- (0.001,0) [-100|100] "%" Vector__XXX
+ SG_ Command_POS_V4 : 0|32@0- (1,0) [-2147483648|2147483647] "RPM" Vector__XXX
+ SG_ Command_BrakeCurrent_V4 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "mA" Vector__XXX
+ SG_ Command_Current_V4 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "mA" Vector__XXX
+ SG_ Command_RPM_V4 : 0|32@0- (1,0) [-2147483648|2147483647] "RPM" Vector__XXX
+ SG_ Status_Tachometer_V4 : 0|32@0- (1,0) [0|0] "RPM" Vector__XXX
+ SG_ Status_Reserved_V4 : 0|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Status_InputVoltage_V4 : 0|16@0- (0.1,0) [0|0] "" Vector__XXX
+ SG_ Staus_MotorTemp_V4 : 0|16@0- (0.1,0) [-3276.8|3276.7] "°C" Vector__XXX
+ SG_ Staus_MosfetTemp_V4 : 0|16@0- (0.1,0) [-3276.8|3276.7] "°C" Vector__XXX
+ SG_ Status_TotalInputCurrent_V4 : 0|16@0- (0.1,0) [-3276.8|3276.7] "A" Vector__XXX
+ SG_ Status_PIDPos_V4 : 0|16@0- (0.02,0) [-655.36|655.34] "" Vector__XXX
+ SG_ Status_WattHoursCharged_V4 : 0|32@0- (1E-005,0) [-21474.83648|21474.83647] "Wh" Vector__XXX
+ SG_ Status_WattHours_V4 : 0|32@0- (1E-005,0) [-21474.83648|21474.83647] "Wh" Vector__XXX
+ SG_ Status_AmpHoursCharged_V4 : 0|32@0- (1E-005,0) [-21474.83648|21474.83647] "Ah" Vector__XXX
+ SG_ Status_AmpHours_V4 : 0|32@0- (1E-005,0) [-21474.83648|21474.83647] "Ah" Vector__XXX
+ SG_ Status_RPM_V4 : 0|32@0- (1,0) [-2147483648|2147483647] "RPM" Vector__XXX
+ SG_ Status_TotalCurrent_V4 : 0|16@0- (0.1,0) [-3276.8|3276.7] "A" Vector__XXX
+ SG_ Status_DutyCycle_V4 : 0|16@0- (0.1,0) [-100|100] "%" Vector__XXX
+ SG_ Command_DutyCycle_V4 : 0|32@0- (0.001,0) [-100|100] "%" Vector__XXX
+ SG_ Setting_CurrentLimitMin_V5 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "" Vector__XXX
+ SG_ Setting_CurrentLimitMax_V5 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "" Vector__XXX
+ SG_ Setting_CurrentLimitMin_V5 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "" Vector__XXX
+ SG_ Setting_CurrentLimitMax_V5 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "" Vector__XXX
+ SG_ Command_RelativeBrakeCurrent_V5 : 0|32@0- (0.001,0) [-100|100] "%" Vector__XXX
+ SG_ Command_RelativeCurrent_V5 : 0|32@0- (0.001,0) [-100|100] "%" Vector__XXX
+ SG_ Command_POS_V5 : 0|32@0- (1,0) [-2147483648|2147483647] "RPM" Vector__XXX
+ SG_ Command_BrakeCurrent_V5 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "mA" Vector__XXX
+ SG_ Command_Current_V5 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "mA" Vector__XXX
+ SG_ Command_RPM_V5 : 0|32@0- (1,0) [-2147483648|2147483647] "RPM" Vector__XXX
+ SG_ Status_Tachometer_V5 : 0|32@0- (1,0) [0|0] "RPM" Vector__XXX
+ SG_ Status_Reserved_V5 : 0|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Status_InputVoltage_V5 : 0|16@0- (0.1,0) [0|0] "" Vector__XXX
+ SG_ Staus_MotorTemp_V5 : 0|16@0- (0.1,0) [-3276.8|3276.7] "°C" Vector__XXX
+ SG_ Staus_MosfetTemp_V5 : 0|16@0- (0.1,0) [-3276.8|3276.7] "°C" Vector__XXX
+ SG_ Status_TotalInputCurrent_V5 : 0|16@0- (0.1,0) [-3276.8|3276.7] "A" Vector__XXX
+ SG_ Status_PIDPos_V5 : 0|16@0- (0.02,0) [-655.36|655.34] "" Vector__XXX
+ SG_ Status_WattHoursCharged_V5 : 0|32@0- (1E-005,0) [-21474.83648|21474.83647] "Wh" Vector__XXX
+ SG_ Status_WattHours_V5 : 0|32@0- (1E-005,0) [-21474.83648|21474.83647] "Wh" Vector__XXX
+ SG_ Status_AmpHoursCharged_V5 : 0|32@0- (1E-005,0) [-21474.83648|21474.83647] "Ah" Vector__XXX
+ SG_ Status_AmpHours_V5 : 0|32@0- (1E-005,0) [-21474.83648|21474.83647] "Ah" Vector__XXX
+ SG_ Status_RPM_V5 : 0|32@0- (1,0) [-2147483648|2147483647] "RPM" Vector__XXX
+ SG_ Status_TotalCurrent_V5 : 0|16@0- (0.1,0) [-3276.8|3276.7] "A" Vector__XXX
+ SG_ Status_DutyCycle_V5 : 0|16@0- (0.1,0) [-100|100] "%" Vector__XXX
+ SG_ Command_DutyCycle_V5 : 0|32@0- (0.001,0) [-100|100] "%" Vector__XXX
+ SG_ Setting_CurrentLimitMin_V6 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "" Vector__XXX
+ SG_ Setting_CurrentLimitMax_V6 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "" Vector__XXX
+ SG_ Setting_CurrentLimitMin_V6 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "" Vector__XXX
+ SG_ Setting_CurrentLimitMax_V6 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "" Vector__XXX
+ SG_ Command_RelativeBrakeCurrent_V6 : 0|32@0- (0.001,0) [-100|100] "%" Vector__XXX
+ SG_ Command_RelativeCurrent_V6 : 0|32@0- (0.001,0) [-100|100] "%" Vector__XXX
+ SG_ Command_POS_V6 : 0|32@0- (1,0) [-2147483648|2147483647] "RPM" Vector__XXX
+ SG_ Command_BrakeCurrent_V6 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "mA" Vector__XXX
+ SG_ Command_Current_V6 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "mA" Vector__XXX
+ SG_ Command_RPM_V6 : 0|32@0- (1,0) [-2147483648|2147483647] "RPM" Vector__XXX
+ SG_ Status_Tachometer_V6 : 0|32@0- (1,0) [0|0] "RPM" Vector__XXX
+ SG_ Status_Reserved_V6 : 0|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Status_InputVoltage_V6 : 0|16@0- (0.1,0) [0|0] "" Vector__XXX
+ SG_ Staus_MotorTemp_V6 : 0|16@0- (0.1,0) [-3276.8|3276.7] "°C" Vector__XXX
+ SG_ Staus_MosfetTemp_V6 : 0|16@0- (0.1,0) [-3276.8|3276.7] "°C" Vector__XXX
+ SG_ Status_TotalInputCurrent_V6 : 0|16@0- (0.1,0) [-3276.8|3276.7] "A" Vector__XXX
+ SG_ Status_PIDPos_V6 : 0|16@0- (0.02,0) [-655.36|655.34] "" Vector__XXX
+ SG_ Status_WattHoursCharged_V6 : 0|32@0- (1E-005,0) [-21474.83648|21474.83647] "Wh" Vector__XXX
+ SG_ Status_WattHours_V6 : 0|32@0- (1E-005,0) [-21474.83648|21474.83647] "Wh" Vector__XXX
+ SG_ Status_AmpHoursCharged_V6 : 0|32@0- (1E-005,0) [-21474.83648|21474.83647] "Ah" Vector__XXX
+ SG_ Status_AmpHours_V6 : 0|32@0- (1E-005,0) [-21474.83648|21474.83647] "Ah" Vector__XXX
+ SG_ Status_RPM_V6 : 0|32@0- (1,0) [-2147483648|2147483647] "RPM" Vector__XXX
+ SG_ Status_TotalCurrent_V6 : 0|16@0- (0.1,0) [-3276.8|3276.7] "A" Vector__XXX
+ SG_ Status_DutyCycle_V6 : 0|16@0- (0.1,0) [-100|100] "%" Vector__XXX
+ SG_ Command_DutyCycle_V6 : 0|32@0- (0.001,0) [-100|100] "%" Vector__XXX
+ SG_ Setting_CurrentLimitMin_V7 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "" Vector__XXX
+ SG_ Setting_CurrentLimitMax_V7 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "" Vector__XXX
+ SG_ Setting_CurrentLimitMin_V7 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "" Vector__XXX
+ SG_ Setting_CurrentLimitMax_V7 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "" Vector__XXX
+ SG_ Command_RelativeBrakeCurrent_V7 : 0|32@0- (0.001,0) [-100|100] "%" Vector__XXX
+ SG_ Command_RelativeCurrent_V7 : 0|32@0- (0.001,0) [-100|100] "%" Vector__XXX
+ SG_ Command_POS_V7 : 0|32@0- (1,0) [-2147483648|2147483647] "RPM" Vector__XXX
+ SG_ Command_BrakeCurrent_V7 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "mA" Vector__XXX
+ SG_ Command_Current_V7 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "mA" Vector__XXX
+ SG_ Command_RPM_V7 : 0|32@0- (1,0) [-2147483648|2147483647] "RPM" Vector__XXX
+ SG_ Status_Tachometer_V7 : 0|32@0- (1,0) [0|0] "RPM" Vector__XXX
+ SG_ Status_Reserved_V7 : 0|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Status_InputVoltage_V7 : 0|16@0- (0.1,0) [0|0] "" Vector__XXX
+ SG_ Staus_MotorTemp_V7 : 0|16@0- (0.1,0) [-3276.8|3276.7] "°C" Vector__XXX
+ SG_ Staus_MosfetTemp_V7 : 0|16@0- (0.1,0) [-3276.8|3276.7] "°C" Vector__XXX
+ SG_ Status_TotalInputCurrent_V7 : 0|16@0- (0.1,0) [-3276.8|3276.7] "A" Vector__XXX
+ SG_ Status_PIDPos_V7 : 0|16@0- (0.02,0) [-655.36|655.34] "" Vector__XXX
+ SG_ Status_WattHoursCharged_V7 : 0|32@0- (1E-005,0) [-21474.83648|21474.83647] "Wh" Vector__XXX
+ SG_ Status_WattHours_V7 : 0|32@0- (1E-005,0) [-21474.83648|21474.83647] "Wh" Vector__XXX
+ SG_ Status_AmpHoursCharged_V7 : 0|32@0- (1E-005,0) [-21474.83648|21474.83647] "Ah" Vector__XXX
+ SG_ Status_AmpHours_V7 : 0|32@0- (1E-005,0) [-21474.83648|21474.83647] "Ah" Vector__XXX
+ SG_ Status_RPM_V7 : 0|32@0- (1,0) [-2147483648|2147483647] "RPM" Vector__XXX
+ SG_ Status_TotalCurrent_V7 : 0|16@0- (0.1,0) [-3276.8|3276.7] "A" Vector__XXX
+ SG_ Status_DutyCycle_V7 : 0|16@0- (0.1,0) [-100|100] "%" Vector__XXX
+ SG_ Command_DutyCycle_V7 : 0|32@0- (0.001,0) [-100|100] "%" Vector__XXX
+ SG_ Setting_CurrentLimitMin_V8 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "" Vector__XXX
+ SG_ Setting_CurrentLimitMax_V8 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "" Vector__XXX
+ SG_ Setting_CurrentLimitMin_V8 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "" Vector__XXX
+ SG_ Setting_CurrentLimitMax_V8 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "" Vector__XXX
+ SG_ Command_RelativeBrakeCurrent_V8 : 0|32@0- (0.001,0) [-100|100] "%" Vector__XXX
+ SG_ Command_RelativeCurrent_V8 : 0|32@0- (0.001,0) [-100|100] "%" Vector__XXX
+ SG_ Command_POS_V8 : 0|32@0- (1,0) [-2147483648|2147483647] "RPM" Vector__XXX
+ SG_ Command_BrakeCurrent_V8 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "mA" Vector__XXX
+ SG_ Command_Current_V8 : 0|32@0- (0.001,0) [-2147483.648|2147483.647] "mA" Vector__XXX
+ SG_ Command_RPM_V8 : 0|32@0- (1,0) [-2147483648|2147483647] "RPM" Vector__XXX
+ SG_ Status_Tachometer_V8 : 0|32@0- (1,0) [0|0] "RPM" Vector__XXX
+ SG_ Status_Reserved_V8 : 0|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ Status_InputVoltage_V8 : 0|16@0- (0.1,0) [0|0] "" Vector__XXX
+ SG_ Staus_MotorTemp_V8 : 0|16@0- (0.1,0) [-3276.8|3276.7] "°C" Vector__XXX
+ SG_ Staus_MosfetTemp_V8 : 0|16@0- (0.1,0) [-3276.8|3276.7] "°C" Vector__XXX
+ SG_ Status_TotalInputCurrent_V8 : 0|16@0- (0.1,0) [-3276.8|3276.7] "A" Vector__XXX
+ SG_ Status_PIDPos_V8 : 0|16@0- (0.02,0) [-655.36|655.34] "" Vector__XXX
+ SG_ Status_WattHoursCharged_V8 : 0|32@0- (1E-005,0) [-21474.83648|21474.83647] "Wh" Vector__XXX
+ SG_ Status_WattHours_V8 : 0|32@0- (1E-005,0) [-21474.83648|21474.83647] "Wh" Vector__XXX
+ SG_ Status_AmpHoursCharged_V8 : 0|32@0- (1E-005,0) [-21474.83648|21474.83647] "Ah" Vector__XXX
+ SG_ Status_AmpHours_V8 : 0|32@0- (1E-005,0) [-21474.83648|21474.83647] "Ah" Vector__XXX
+ SG_ Status_RPM_V8 : 0|32@0- (1,0) [-2147483648|2147483647] "RPM" Vector__XXX
+ SG_ Status_TotalCurrent_V8 : 0|16@0- (0.1,0) [-3276.8|3276.7] "A" Vector__XXX
+ SG_ Status_DutyCycle_V8 : 0|16@0- (0.1,0) [-100|100] "%" Vector__XXX
+ SG_ Command_DutyCycle_V8 : 0|32@0- (0.001,0) [-100|100] "%" Vector__XXX
+
+BO_ 2147498498 VESC_Status6_V2: 8 Vector__XXX
+ SG_ Staus_PPM_V2 : 55|16@0- (0.1,0) [-3276.8|3276.7] "" Vector__XXX
+ SG_ Staus_ADC3_V2 : 39|16@0- (0.1,0) [-3276.8|3276.7] "" Vector__XXX
+ SG_ Staus_ADC2_V2 : 23|16@0- (0.1,0) [-3276.8|3276.7] "" Vector__XXX
+ SG_ Staus_ADC1_V2 : 7|16@0- (0.1,0) [-3276.8|3276.7] "" Vector__XXX
+
+BO_ 2147498497 VESC_Status6_V1: 8 Vector__XXX
+ SG_ Staus_PPM_V1 : 55|16@0- (0.1,0) [-3276.8|3276.7] "" Vector__XXX
+ SG_ Staus_ADC3_V1 : 39|16@0- (0.1,0) [-3276.8|3276.7] "" Vector__XXX
+ SG_ Staus_ADC2_V1 : 23|16@0- (0.1,0) [-3276.8|3276.7] "" Vector__XXX
+ SG_ Staus_ADC1_V1 : 7|16@0- (0.1,0) [-3276.8|3276.7] "" Vector__XXX
+
+BO_ 2147487233 VESC_Status2_V1: 8 VESC1
+ SG_ Status_AmpHours_V1 : 7|32@0- (1E-005,0) [-21474.83648|21474.83647] "Ah"  Main_ECU
+ SG_ Status_AmpHoursCharged_V1 : 39|32@0- (1E-005,0) [-21474.83648|21474.83647] "Ah"  Main_ECU
+
+BO_ 2147490561 VESC_Status5_V1: 8 VESC1
+ SG_ Status_Tachometer_V1 : 39|32@0- (1,0) [0|0] "RPM"  Main_ECU
+ SG_ Status_Reserved_V1 : 23|16@0- (1,0) [0|0] ""  Main_ECU
+ SG_ Status_InputVoltage_V1 : 7|16@0- (0.1,0) [0|0] ""  Main_ECU
+
+BO_ 2147487745 VESC_Status4_V1: 8 VESC1
+ SG_ Staus_MotorTemp_V1 : 23|16@0- (0.1,0) [-3276.8|3276.7] "°C"  Main_ECU
+ SG_ Staus_MosfetTemp_V1 : 7|16@0- (0.1,0) [-3276.8|3276.7] "°C"  Main_ECU
+ SG_ Status_TotalInputCurrent_V1 : 39|16@0- (0.1,0) [-3276.8|3276.7] "A"  Main_ECU
+ SG_ Status_PIDPos_V1 : 55|16@0- (0.02,0) [-655.36|655.34] ""  Main_ECU
+
+BO_ 2147487489 VESC_Status3_V1: 8 VESC1
+ SG_ Status_WattHoursCharged_V1 : 39|32@0- (1E-005,0) [-21474.83648|21474.83647] "Wh"  Main_ECU
+ SG_ Status_WattHours_V1 : 7|32@0- (1E-005,0) [-21474.83648|21474.83647] "Wh"  Main_ECU
+
+BO_ 2147485953 VESC_Status1_V1: 8 VESC1
+ SG_ Status_RPM_V1 : 7|32@0- (1,0) [-2147483648|2147483647] "RPM"  Main_ECU
+ SG_ Status_TotalCurrent_V1 : 39|16@0- (0.1,0) [-3276.8|3276.7] "A"  Main_ECU
+ SG_ Status_DutyCycle_V1 : 55|16@0- (0.1,0) [-100|100] "%"  Main_ECU
+
+BO_ 2147490562 VESC_Status5_V2: 8 VESC2
+ SG_ Status_Tachometer_V2 : 39|32@0- (1,0) [0|0] "RPM"  Main_ECU
+ SG_ Status_Reserved_V2 : 23|16@0- (1,0) [0|0] ""  Main_ECU
+ SG_ Status_InputVoltage_V2 : 7|16@0- (0.1,0) [0|0] ""  Main_ECU
+
+BO_ 2147487746 VESC_Status4_V2: 8 VESC2
+ SG_ Staus_MotorTemp_V2 : 23|16@0- (0.1,0) [-3276.8|3276.7] "°C"  Main_ECU
+ SG_ Staus_MosfetTemp_V2 : 7|16@0- (0.1,0) [-3276.8|3276.7] "°C"  Main_ECU
+ SG_ Status_TotalInputCurrent_V2 : 39|16@0- (0.1,0) [-3276.8|3276.7] "A"  Main_ECU
+ SG_ Status_PIDPos_V2 : 55|16@0- (0.02,0) [-655.36|655.34] ""  Main_ECU
+
+BO_ 2147487490 VESC_Status3_V2: 8 VESC2
+ SG_ Status_WattHoursCharged_V2 : 39|32@0- (1E-005,0) [-21474.83648|21474.83647] "Wh"  Main_ECU
+ SG_ Status_WattHours_V2 : 7|32@0- (1E-005,0) [-21474.83648|21474.83647] "Wh"  Main_ECU
+
+BO_ 2147487234 VESC_Status2_V2: 8 VESC2
+ SG_ Status_AmpHoursCharged_V2 : 39|32@0- (1E-005,0) [-21474.83648|21474.83647] "Ah"  Main_ECU
+ SG_ Status_AmpHours_V2 : 7|32@0- (1E-005,0) [-21474.83648|21474.83647] "Ah"  Main_ECU
+
+BO_ 2147485954 VESC_Status1_V2: 8 VESC2
+ SG_ Status_RPM_V2 : 7|32@0- (1,0) [-2147483648|2147483647] "RPM"  Main_ECU
+ SG_ Status_TotalCurrent_V2 : 39|16@0- (0.1,0) [-3276.8|3276.7] "A"  Main_ECU
+ SG_ Status_DutyCycle_V2 : 55|16@0- (0.1,0) [-100|100] "%"  Main_ECU
+
+
+
+CM_ BO_ 3221225472 "This is a message for not used signals, created by Vector CANdb++ DBC OLE DB Provider.";
+BA_DEF_  "BusType" STRING ;
+BA_DEF_DEF_  "BusType" "CAN";
+BA_ "BusType" "CAN";
+

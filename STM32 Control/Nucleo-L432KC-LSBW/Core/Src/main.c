@@ -140,7 +140,7 @@ void compute_current(){
     error = steer_desired - steer_measured;
 
     // ignore small error to avoid oscillation
-    if (steer_desired == 0.0 && fabs(error) < 1.0)
+    if (steer_desired <= 2.0 && fabs(error) < 1.0)
     {
     	error = error_prev = current = 0.0;
     	return;
@@ -183,6 +183,10 @@ void send_command(){
 
     // send current command to vesc via uart
 	vesc_set_current(vesc_packet, (float)current);
+	//when the current is low set the rpm to 0 to brake the motor
+	if (abs(current) <= 0.5){
+		vesc_set_rpm(vesc_packet, 0);
+	}
 	HAL_UART_Transmit(VESC_UART, vesc_packet, sizeof(vesc_packet), 2);
 }
 
