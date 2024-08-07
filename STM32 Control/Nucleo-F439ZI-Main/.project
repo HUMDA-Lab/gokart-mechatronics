@@ -28,4 +28,11 @@
 		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>Inc/spm_srxl_config.h</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/AV4EV-all/STM32%20Control/Nucleo-F439ZI-Main/Inc/spm_srxl_config.h</locationURI>
+		</link>
+	</linkedResources>
 </projectDescription>

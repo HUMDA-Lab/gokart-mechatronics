@@ -9,7 +9,9 @@ typedef struct app_state {
 	float steer_percent;
 
 	int control_mode;
-	int gokart_status;
+	int gokart_EM_status;
+	//0 forward, 1 reverse
+	int gokart_reverse;
 
 	spektrum_nucleo_state_t rc_receiver;
 	spektrum_state_t rc_receiver_state;
